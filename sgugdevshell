@@ -16,6 +16,8 @@ INCLUDE_PATH=/opt/local/include
 CFLAGS=''
 LDFLAGS=''
 
+# TODO: usage
+
 while getopts g:l:i:b:B: i
 do
     case $i in
