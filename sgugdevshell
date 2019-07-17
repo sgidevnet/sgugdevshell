@@ -1,0 +1,61 @@
+#!/bin/ksh
+
+# we could source a toolchain-supplied defaults file here
+
+BIN_PATH=/opt/local/bin
+BINUTILS_PATH=/opt/local/binutils-2.21.1/bin
+GCC_PATH=/opt/local/gcc-8.2.0/bin
+N32_LIB_PATH=/opt/local/lib
+INCLUDE_PATH=/opt/local/include
+CFLAGS=''
+LDFLAGS=''
+
+while getopts g:l:i:b:B: i
+do
+    case $i in
+	g) echo 'NOTE: Overriding GCC path with '$2; GCC_PATH=$2;;
+	l) echo 'NOTE: Overriding N32 library path with '$2; N32_LIB_PATH=$2:${N32_LIB_PATH};;
+	i) echo 'NOTE: Overriding include path with '$2; INCLUDE_PATH=$2:${INCLUDE_PATH};;
+	b) echo 'NOTE: Overriding general binary path with '$2; BIN_PATH=$2;;
+	B) echo 'NOTE: Overriding binutils path with '$2; BINUTILS_PATH=$2;;
+    esac
+done
+	
+export PATH=$GCC_PATH:$BINUTILS_PATH:$BIN_PATH:$PATH
+export LD_LIBRARYN32_PATH=$N32_LIB_PATH:$LD_LIBRARYN32_PATH
+
+IFS=':'
+
+set -A incs $INCLUDE_PATH
+for i in ${incs[@]}
+do
+    CFLAGS="-I${i} "$CFLAGS
+done
+
+set -A n32libs $N32_LIB_PATH
+for i in ${libs[@]}
+do
+    LDFLAGS="-L${i} "$LDFLAGS
+    # TODO: handle a case with empty $LD_LIBRARYN32_PATH
+    # and only one passed element to avoid the empty entry
+    LD_LIBRARYN32_PATH=${i}:$LD_LIBRARYN32_PATH
+done
+
+echo
+echo 'Your development environment setup for this session:'
+echo
+echo 'PATH                  = '$PATH
+echo 'CFLAGS                = '$CFLAGS
+echo 'CXXFLAGS              = '$CFLAGS
+echo 'LDFLAGS               = '$LDFLAGS
+echo 'LD_LIBRARYN32_PATH    = '$LD_LIBRARYN32_PATH
+
+echo 
+echo 'Good luck!'
+
+export CFLAGS
+export LDFLAGS
+export PATH
+export LD_LIBRARYN32_PATH
+exec /opt/local/bin/bash --norc
+
