@@ -1,6 +1,12 @@
 #!/bin/ksh
 
 # we could source a toolchain-supplied defaults file here
+#
+# possibly even source a whole dir full of stuff so that
+# package-specific additions would get pulled in?
+#
+# these values are just what happens to work on the box
+# I'm writing this thing on. change to what you have.
 
 BIN_PATH=/opt/local/bin
 BINUTILS_PATH=/opt/local/binutils-2.21.1/bin
@@ -35,8 +41,10 @@ done
 set -A n32libs $N32_LIB_PATH
 for i in ${libs[@]}
 do
-    LDFLAGS="-L${i} "$LDFLAGS
-    # TODO: handle a case with empty $LD_LIBRARYN32_PATH
+    # do this to make sure all built executables are usable
+    # without setting LD_LIBRARYN32_PATH separately.
+    LDFLAGS="-L${i} -Wl,-rpath=${i} "$LDFLAGS
+    # TODO: handle a case with empty LD_LIBRARYN32_PATH
     # and only one passed element to avoid the empty entry
     LD_LIBRARYN32_PATH=${i}:$LD_LIBRARYN32_PATH
 done
@@ -57,5 +65,21 @@ export CFLAGS
 export LDFLAGS
 export PATH
 export LD_LIBRARYN32_PATH
+
+# TODO: figure out login shell and act accordingly.
+#
+# with bash we can set --rcfile to something. for example,
+# if we wanted to "inject" stuff directly (such as a precmd
+# function, for example), we could make a temporary file
+# which would do all that and in the end source ~/.sgug_bashrc
+# and delete itself to avoid filling up /tmp with cruft.
+#
+# the idea of .sgug_bashrc would be to serve as an init file for
+# stuff like prompting, completion etc. the user could set up the
+# shell init so that his .bashrc sets his normal PATH and friends
+# and sources .sgug_bashrc in the end for the rest.
+#
+# just an idea - discuss!
+
 exec /opt/local/bin/bash --norc
 
