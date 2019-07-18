@@ -8,6 +8,39 @@
 # these values are just what happens to work on the box
 # I'm writing this thing on. change to what you have.
 
+# This will be re-used later down the script to best-guess
+# at which shell the user actually wants
+ORIG_SHELL=$SHELL
+
+# Unset a bunch of things we don't want to "leak"
+# They may get set later down the script, but lets be explicit
+# about what needs clearing
+# 1) Base tools/paths to them
+unset SHELL
+unset CONFIG_SHELL
+unset SHELL_PATH
+unset PERL
+unset M4
+unset AWK
+unset SED
+unset GREP
+unset BISON
+unset YACC
+unset AS
+unset LD
+unset CC
+unset CXX
+# 2) Compiler vars
+unset CPPFLAGS
+unset CFLAGS
+unset CXXFLAGS
+unset LDFLAGS
+# 3) Discovery things
+unset LD_LIBRARY_PATH
+unset LD_LIBRARYN32_PATH
+unset LD_LIBRARYN64_PATH
+unset PKG_CONFIG_PATH
+
 BIN_PATH=/opt/local/bin
 BINUTILS_PATH=/opt/local/binutils-2.21.1/bin
 GCC_PATH=/opt/local/gcc-8.2.0/bin
